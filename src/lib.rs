@@ -1,9 +1,6 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
 use near_sdk::{env, near_bindgen}; // env is used lower for logging
 
-// constant for puzzle number
-const PUZZLE_NUMBER: u8 = 1; // IN-MEMORY STORAGE (not paid for; value 1 is contained in the contract code)
-
 // ------------------------------------------ CONTRACT STATE --------------------------------------------------
 #[near_bindgen] // macro used on a struct and fn implementations to generate code to be a valid NEAR contract and expose intended fns for external callability.
 #[derive(Default, BorshDeserialize, BorshSerialize)] // Borsh: Binary Object Representation Serializer for Hashing to convert code to 0,1 efficiently.
@@ -15,15 +12,14 @@ pub struct Contract {
 // ------------------------------------------ CONTRACT METHODS --------------------------------------------------
 #[near_bindgen]
 impl Contract { // impl provides methods on structs and enums
-    // Immutable functions.
-    pub fn get_puzzle_number(&self) -> u8 { // user can call this function without signing a transaction, since its view-only (like a GET request but using RPC endpoints)
-        PUZZLE_NUMBER // don't need a 'return' 
+    // Immutable function. 
+    #[init] // macro
+    pub fn new(solution: String) -> Self { // set the solution once, right after deploying contract. 
+        Self {
+            crossword_solution: solution,
+        }
     }
-    // Mutable function requires a signed transaction. When smart contract is called, the contract's field crossword_solution will change.
-    pub fn set_solution(&mut self, solution: String) { 
-        self.crossword_solution = solution; // user (devloper actually!) supplies a parameter 
-    }
-    // Mutable function requires a signed transaction.
+    // Mutable function requires a signed transaction. 
     pub fn guess_solution(&mut self, solution: String) { 
         if solution == self.crossword_solution {
             env::log_str("You guessed right!") } 
@@ -41,15 +37,45 @@ mod tests {
     use near_sdk::test_utils::{get_logs, VMContextBuilder};
     use near_sdk::{testing_env, AccountId};
 
-    // part of writing unit tests is setting up a mock context
-    // provide a `predecessor` here, it'll modify the default context
-    fn get_context(predecessor: AccountId) -> VMContextBuilder {
+    #[test] // note the button below 'Run test' (but for some reason runs all tests, not just current one)
+    fn debug_get_hash() {
+        // Basic set up for a unit test
+        testing_env!(VMContextBuilder::new().build()); // create some basic context for a transaction, then sets up the testing environment.
+        // Using a unit test to rapidly debug and iterate
+        let debug_solution = "near nomicon ref finance";
+        let debug_hash_bytes = env::sha256(debug_solution.as_bytes());
+        let debug_hash_string = hex::encode(debug_hash_bytes);
+        println!("Let's debug: {:?}", debug_hash_string); // Let's debug: "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"
+    }
+    
+    // This get_context is typically included in all unit tests, i.e. set up a mock context:
+    fn get_context(predecessor: AccountId) -> VMContextBuilder { // provide a `predecessor` here, it'll modify the default context
         let mut builder = VMContextBuilder::new();
         builder.predecessor_account_id(predecessor);
         builder
     }
+    
+    #[test]
+    fn check_guess_solution() {
+        // Get Alice as an account ID
+        let alice = AccountId::new_unchecked("alice.testnet".to_string());
+        // Set up the testing context and unit test environment
+        let context = get_context(alice);
+        testing_env!(context.build());
 
-    // TESTS HERE
+        // Set up contract object and call the new method
+        let mut contract = Contract::new(
+            "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f".to_string(), // near nomicon ref finance 69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f
+        );
+        contract.guess_solution("wrong answer here".to_string());
+        assert_eq!(get_logs(), ["Try again."], "Expected a failure log.");
+        contract.guess_solution("69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f".to_string());
+        assert_eq!(
+            get_logs(),
+            ["Try again.", "You guessed right!"],
+            "Expected a successful log after the previous failed log."
+        );
+    }
 }
 
 // ------------------------------------------------- NOTES -------------------------------------------------------
@@ -60,6 +86,13 @@ NEAR:
 
 
 CONTRACT:
+Cargo.toml
+  name = "my-crossword"
+  authors = ["Katya <e7.abramova@gmail.com>"]
+  [dependencies]
+  near-sdk = "4.0.0-pre.4"
+  hex = "0.4.3" (used for hashing, so that others can't see some values within the contract)
+
 1. Build contract
     $ ./build.sh
 
@@ -75,10 +108,10 @@ CONTRACT:
     $ near state crossword.drkat.testnet
    Account crossword.drkat.testnet:
       {
-        amount: '100000000000000000000000000', 
-        block_hash: '9yskE7TXpYFzXwpk15ABEwMMp6Kczcxe1eKDCsUEmFFv',
-        block_height: 82937991,
-        code_hash: '11111111111111111111111111111111', \\ codehash is all 1s means no contract is not deployed to this account.
+        amount: '100000000000000000000000000',
+        block_hash: 'CjnJnZRaoyCdh1yW15GicBXDANqYkviw9zacB5svfW4m',
+        block_height: 83068600,
+        code_hash: '11111111111111111111111111111111',
         locked: '0',
         storage_paid_at: 0,
         storage_usage: 182,
@@ -93,34 +126,37 @@ CONTRACT:
     $ near state crossword.drkat.testnet
    Account crossword.drkat.testnet
       {
-        amount: '99999816195677182400000000',
-        block_hash: '5numAYbTzgETD3bQ1oyh4vPVofJ3D6YLixwrSPiwwG9Q',
-        block_height: 82939597,
-        code_hash: '8vfaZYFXWsFe4UJoXZWGLcgyybXziKEsGDVYx7QjkYad', \\ codehash is NOT 1s means contract IS deployed to this account.
+        amount: '99999816146623589600000000',
+        block_hash: 'J5zVXGFgSaquqxgjrKUr9B3ixGjrcPW8n8LVstAyrQAN',
+        block_height: 83068685,
+        code_hash: '7YqgxU85ADEmRZ43XxKiAEEx9TZ221dsbGFDuHnt8thA',
         locked: '0',
         storage_paid_at: 0,
-        storage_usage: 92094,
-        formattedAmount: '99.9998161956771824'
+        storage_usage: 92130,
+        formattedAmount: '99.9998161466235896'
       }
 4. Interact
-   Call view-only method (no params so don't pass any but can supply empty input too; i.e. equivalent ways of calling the function):
-    $ near view crossword.drkat.testnet get_puzzle_number
-    $ near view crossword.drkat.testnet get_puzzle_number '{}'
-   
-   Call set_solution method to set the solution as a String
-    $ near call crossword.drkat.testnet set_solution '{"solution": "near nomicon ref finance"}' --accountId drkat.testnet
-   Transaction Id CoBva59CARtGh7tP1vKqQ8ozXrDsU3yDHAJdK75Mfjfm To see the transaction in the transaction explorer https://explorer.testnet.near.org/transactions/CoBva59CARtGh7tP1vKqQ8ozXrDsU3yDHAJdK75Mfjfm
+   Call set_solution method to set the solution as a String (can only call this init method once, second time will be an error)
+    $ near call crossword.drkat.testnet new '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}' --accountId crossword.drkat.testnet
+   Transaction Id 3BBtntvF1EkNcQWP2AxArZueNpWCCjNALRecqkvHaSbe To see the transaction in the transaction explorer https://explorer.testnet.near.org/transactions/CoBva59CARtGh7tP1vKqQ8ozXrDsU3yDHAJdK75Mfjfm
 
    Check if argument == solution and store result: 
-    $ near call crossword.drkat.testnet guess_solution '{"solution": "near nomicon ref finance"}' --accountId drkat.testnet
-   Receipt: 4GCtgWLWtAR9VA1A9Ad6m3vaXQVaH8Lvw5SKxwyyAbaX
+    $ near call crossword.drkat.testnet guess_solution '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}' --accountId drkat.testnet
+   Receipt: CDANFsib1vyiv9VxkkheCpGUgroyP1GKo9wsJXzPWpXr
    Log [crossword.drkat.testnet]: You guessed right!
-   Transaction Id FU1W1KUoiRNyHkUyeHyiRvSnqTjeCYzkES26eeT5JoK3 To see the transaction in the transaction explorer https://explorer.testnet.near.org/transactions/FU1W1KUoiRNyHkUyeHyiRvSnqTjeCYzkES26eeT5JoK3
-5. Delete and re-create sub-account
+   Transaction Id 9mbDK8yNLN6eTY94nLVreYEz9jzuysdmm5wHB6YMwLnP To see the transaction in the transaction explorer https://explorer.testnet.near.org/transactions/FU1W1KUoiRNyHkUyeHyiRvSnqTjeCYzkES26eeT5JoK3
+5. Unit tests (usually at the bottom of lib.rs)
+    Run unit tests with: 
+     $ cargo test -- --nocapture 
+6. Delete and re-create sub-account
    This will clear the state and give a fresh start:
-    $ near delete crossword.friend.testnet friend.testnet
-    $ near create-account crossword.friend.testnet --masterAccount friend.testnet
-  
+    $ near delete crossword.drkat.testnet drkat.testnet
+    $ near create-account crossword.drkat.testnet --masterAccount drkat.testnet
+7. After re-creating account, lets do our deployment and initialisation as a Batch Action:
+    $ near deploy crossword.drkat.testnet --wasmFile res/my_crossword.wasm --initFunction 'new' --initArgs '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}'
+   Done deploying and initializing crossword.drkat.testnet 
+
+
 RUST:
 - Indent code shortcut: cmd + ] 
 - In Rust by default everything (all variables) is PRIVATE!!! Need to use &mut to ensure can change values of variables.
