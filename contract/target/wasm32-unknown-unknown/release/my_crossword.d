@@ -1,0 +1,1 @@
+/Users/bondgirl007/WORK/NEAR/CODE/CONTRACTS/crossword_nft/contract/target/wasm32-unknown-unknown/release/my_crossword.wasm: /Users/bondgirl007/WORK/NEAR/CODE/CONTRACTS/crossword_nft/contract/src/lib.rs
