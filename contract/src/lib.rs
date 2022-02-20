@@ -170,8 +170,13 @@ Cargo.toml
 
    ----------------------------
 8. Getting the simple App to work: 
-
-
+   Had to in stall 'parcel' as kept getting an error:
+    > parcel src/index.html
+    sh: parcel: command not found
+   In Terminal on Mac ran:
+    $ sudo npm install -g parcel-bundler
+   After that ran this twice (on the first occasion got an error that could not find React (its a GitHub library of a guy who wrote the puzzles).)
+    $ env CONTRACT_NAME=crossword.drkat.testnet npm run start
 
 
 RUST:
