@@ -43,16 +43,16 @@ near state crossword.myacc.testnet
 ```
 You will see something like this, with your own data, however note that the `code_hash` contains all 1s, therefore we know that no contract is currenntly deployed to this subaccount.
 ```
-      {
-        amount: '100000000000000000000000000',
-        block_hash: 'CjnJnZRaoyCdh1yW15GicBXDANqYkviw9zacB5svfW4m',
-        block_height: 83068600,
-        code_hash: '11111111111111111111111111111111',
-        locked: '0',
-        storage_paid_at: 0,
-        storage_usage: 182,
-        formattedAmount: '100'
-      }
+{
+  amount: '100000000000000000000000000',
+  block_hash: 'CjnJnZRaoyCdh1yW15GicBXDANqYkviw9zacB5svfW4m',
+  block_height: 83068600,
+  code_hash: '11111111111111111111111111111111',
+  locked: '0',
+  storage_paid_at: 0,
+  storage_usage: 182,
+  formattedAmount: '100'
+}
 ```
 
 ### Deploy The Contract to Blockchain
@@ -67,18 +67,18 @@ You can view the current state of the subaccount (on which the contract is now d
 near state crossword.myacc.testnet
 ```
 This time you will see that the `code_hash` is not all 1s, therefore a contract has been deployed successfully:
-`
-      {
-        amount: '99999816146623589600000000',
-        block_hash: 'J5zVXGFgSaquqxgjrKUr9B3ixGjrcPW8n8LVstAyrQAN',
-        block_height: 83068685,
-        code_hash: '7YqgxU85ADEmRZ43XxKiAEEx9TZ221dsbGFDuHnt8thA',
-        locked: '0',
-        storage_paid_at: 0,
-        storage_usage: 92130,
-        formattedAmount: '99.9998161466235896'
-      }
-`
+```
+{
+  amount: '99999816146623589600000000',
+  block_hash: 'J5zVXGFgSaquqxgjrKUr9B3ixGjrcPW8n8LVstAyrQAN',
+  block_height: 83068685,
+  code_hash: '7YqgxU85ADEmRZ43XxKiAEEx9TZ221dsbGFDuHnt8thA',
+  locked: '0',
+  storage_paid_at: 0,
+  storage_usage: 92130,
+  formattedAmount: '99.9998161466235896'
+}
+```
 
 ### Interact With The Contract
 #### Check if argument == solution and store result: 
