@@ -1,13 +1,14 @@
 # NEAR Blockchain : Rust Smart Contract Crossword NFT
 
+This contract is written in Rust programming language, and was developed using the Visual Studio Code IDE.
+
 ## Overview
 
 1. NFT was built following [NEAR: Zero-to-Hero](https://www.near-sdk.io/zero-to-hero/basics/overview) instructions.
 2. Set up the [prerequisites](https://github.com/near/near-sdk-rs#pre-requisites).
-3. Main code is located in `src/lib.rs`.
 
 ## Explore Contract
-The source for this contract is in `crossword/contract/src/lib.rs`. The contract contains 1 puzzle which should be solved by the user.
+The source for this contract is in `contract/src/lib.rs`. The contract contains 1 puzzle which should be solved by the user.
 
 ### Build Contract
 Since the smart contract is a library (crate) rather than a binary, the `cargo run` command is unavailable. Instead to build the contract ensure your cmd is in the `knn_nft` path and use:
