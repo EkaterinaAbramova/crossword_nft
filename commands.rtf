@@ -1,0 +1,43 @@
+{\rtf1\ansi\ansicpg1252\cocoartf2638
+\cocoatextscaling0\cocoaplatform0{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red88\green137\blue67;
+\red0\green0\blue0;\red255\green255\blue255;\red88\green137\blue67;\red203\green203\blue202;\red88\green137\blue67;
+\red202\green202\blue202;}
+{\*\expandedcolortbl;;\cssrgb\c0\c1\c1;\cssrgb\c100000\c100000\c100000\c0;\cssrgb\c41481\c59899\c33082;
+\cssrgb\c0\c0\c0;\cssrgb\c100000\c100000\c99985\c0;\cssrgb\c41481\c59899\c33082;\cssrgb\c83320\c83320\c83112;\cssrgb\c41436\c59847\c32956;
+\cssrgb\c83137\c83137\c83137;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww24240\viewh8900\viewkind0
+\deftab720
+\pard\pardeftab720\partightenfactor0
+
+\f0\fs24 \cf2 \cb3 \expnd0\expndtw0\kerning0
+near delete crossword.near-ncd.testnet near-ncd.testnet\cf5 \cb6 \outl0\strokewidth0 \strokec7 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \
+./build.sh\
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb6 \strokec8 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb6 \strokec7 near login \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb6 \strokec8 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb6 \strokec7 cargo test -- --nocapture\
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb6 \strokec8 \
+\pard\pardeftab720\partightenfactor0
+\cf5 \cb6 \strokec7 near create-account crossword.near-ncd.testnet --masterAccount near-ncd.testnet\cb6 \strokec8 \
+\
+\cb6 \strokec7 near state crossword.near-ncd.testnet\cb6 \strokec8 \
+\
+\cb6 \strokec7 near deploy crossword.near-ncd.testnet --wasmFile res/my_crossword.wasm\cb6 \strokec8 \
+\
+\cb6 \strokec7 near state crossword.near-ncd.testnet\cb6 \strokec8 \
+\
+\cb6 \strokec7 near call crossword.near-ncd.testnet new '\{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"\}' --accountId crossword.near-ncd.testnet\cb6 \strokec8 \
+\
+\cb6 \strokec7 near call crossword.near-ncd.testnet guess_solution '\{"solution": "\cb6 \strokec9 near nomicon ref finance\cb6 \strokec7 "\}' --accountId near-ncd.testnet\
+\
+env CONTRACT_NAME=crossword.near-ncd.testnet npm run start\cf10 \cb1 \strokec10 \
+\
+}
