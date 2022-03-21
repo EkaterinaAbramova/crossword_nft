@@ -1,5 +1,5 @@
 use near_sdk::borsh::{self, BorshDeserialize, BorshSerialize};
-use near_sdk::{env, near_bindgen}; // env is used lower for logging
+use near_sdk::{env, near_bindgen}; // env is used for logging
 
 // ------------------------------------------ CONTRACT STATE --------------------------------------------------
 #[near_bindgen] // macro used on a struct and fn implementations to generate code to be a valid NEAR contract and expose intended fns for external callability.
@@ -79,46 +79,37 @@ mod tests {
             "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f".to_string(), // near nomicon ref finance 69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f
         );
         contract.guess_solution("wrong answer here".to_string());
-        assert_eq!(get_logs(), ["Try again."], "Expected a failure log.");
-        contract.guess_solution("69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f".to_string());
+        assert_eq!(get_logs(), ["Try again."], "Expected a failure log."); //Asserts that two expressions are equal to each other 
+        contract.guess_solution("near nomicon ref finance".to_string());
         //assert!(ans, true); // Asserts that a boolean expression is true at runtime.
-        assert_eq!( //Asserts that two expressions are equal to each other 
-            get_logs(), 
-            ["Try again.", "You guessed right!"],
+        assert_eq!( 
+            get_logs(), ["Try again.", "You guessed right!"],
             "Expected a successful log after the previous failed log."
         );
     }
 }
 
+
 // ------------------------------------------------- NOTES -------------------------------------------------------
 /*
-NEAR:
-- Blockchain is an open ledger, so everyone can see the state of smart contracts and transactions taking place.
-- Storage is "paid for" via the native NEAR token. It is not "state rent" but storage staking, paid once, and returned when storage is deleted.
-
-
-CONTRACT:
-Cargo.toml
-  name = "my-crossword"
-  authors = ["Katya <e7.abramova@gmail.com>"]
-  [dependencies]
-  near-sdk = "4.0.0-pre.4"
-  hex = "0.4.3" (used for hashing, so that others can't see some values within the contract)
+Storage is "paid for" via the native NEAR token. It is not "state rent" but storage staking, paid once, and returned when storage is deleted.
 
 1. Build contract
-    $ ./build.sh
+   Build contrac using command:
+     $ ./build.sh
 
    - In Terminal, run:
       $ near login 
-     near cli generated private key (kept in jason file on computer) and public key as a URL param to NEAR wallet -> browser opens up, log into the testnet account.
+     I logged into my near-ncd.testnet account (note that you are warned about full access being granted)
+     near cli generated a private key (kept in jason file on your computer) and public key as a URL param to NEAR wallet
    - To run tests:
-      $ cargo test --package rust-template -- --nocapture
+      $ cargo test -- --nocapture
 2. Create sub-account (or delete and re-create it)
-    $ near create-account crossword.drkat.testnet --masterAccount drkat.testnet
+    $ near create-account crossword.near-ncd.testnet --masterAccount near-ncd.testnet
    
    Can view subaccount state:
-    $ near state crossword.drkat.testnet
-   Account crossword.drkat.testnet:
+    $ near state crossword.near-ncd.testnet
+   Account crossword.near-ncd.testnet:
       {
         amount: '100000000000000000000000000',
         block_hash: 'CjnJnZRaoyCdh1yW15GicBXDANqYkviw9zacB5svfW4m',
@@ -131,12 +122,12 @@ Cargo.toml
       }
 3. Deploy to sub-account
    Ensure the cmd is in the dirctory containing res folder.
-    $ near deploy crossword.drkat.testnet --wasmFile res/my_crossword.wasm
+    $ near deploy crossword.near-ncd.testnet --wasmFile res/my_crossword.wasm
     See the transaction in the transaction explorer https://explorer.testnet.near.org/transactions/DwkVQ6mQMP2RcGGUG2ygDxUGYG84nXHQyNStF5E4L886 
    
    View state again to see that the contract is now deployed (i.e. code_hash is not 1s):
-    $ near state crossword.drkat.testnet
-   Account crossword.drkat.testnet
+    $ near state crossword.near-ncd.testnet
+   Account crossword.near-ncd.testnet
       {
         amount: '99999816146623589600000000',
         block_hash: 'J5zVXGFgSaquqxgjrKUr9B3ixGjrcPW8n8LVstAyrQAN',
@@ -148,35 +139,34 @@ Cargo.toml
         formattedAmount: '99.9998161466235896'
       }
 4. Interact
-   Call set_solution method to set the solution as a String (can only call this init method once, second time will be an error)
-    $ near call crossword.drkat.testnet new '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}' --accountId crossword.drkat.testnet
+   Call new method to set solution as a hashed String (can only call this init method once, second time will be an error)
+    $ near call crossword.near-ncd.testnet new '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}' --accountId crossword.near-ncd.testnet
    Transaction Id 3BBtntvF1EkNcQWP2AxArZueNpWCCjNALRecqkvHaSbe To see the transaction in the transaction explorer https://explorer.testnet.near.org/transactions/CoBva59CARtGh7tP1vKqQ8ozXrDsU3yDHAJdK75Mfjfm
 
    Check if argument == solution and store result: 
-    $ near call crossword.drkat.testnet guess_solution '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}' --accountId drkat.testnet
+    $ near call crossword.near-ncd.testnet guess_solution '{"solution": "near nomicon ref finance"}' --accountId near-ncd.testnet
    Receipt: CDANFsib1vyiv9VxkkheCpGUgroyP1GKo9wsJXzPWpXr
-   Log [crossword.drkat.testnet]: You guessed right!
+   Log [crossword.near-ncd.testnet]: You guessed right!
    Transaction Id 9mbDK8yNLN6eTY94nLVreYEz9jzuysdmm5wHB6YMwLnP To see the transaction in the transaction explorer https://explorer.testnet.near.org/transactions/FU1W1KUoiRNyHkUyeHyiRvSnqTjeCYzkES26eeT5JoK3
-5. Unit tests (usually at the bottom of lib.rs)
-    Run unit tests with: 
-     $ cargo test -- --nocapture 
-6. Delete and re-create sub-account
+5. Delete and re-create sub-account
    This will clear the state and give a fresh start:
-    $ near delete crossword.drkat.testnet drkat.testnet
-    $ near create-account crossword.drkat.testnet --masterAccount drkat.testnet
-7. After re-creating account, lets do our deployment and initialisation as a Batch Action:
-    $ near deploy crossword.drkat.testnet --wasmFile res/my_crossword.wasm --initFunction 'new' --initArgs '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}'
-   Done deploying and initializing crossword.drkat.testnet 
+    $ near delete crossword.near-ncd.testnet near-ncd.testnet
+    $ near create-account crossword.near-ncd.testnet --masterAccount near-ncd.testnet
+6. After re-creating account, lets do our deployment and initialisation as a Batch Action (a safer procedure than doing it in 2 steps as we did above):
+    $ near deploy crossword.near-ncd.testnet --wasmFile res/my_crossword.wasm --initFunction 'new' --initArgs '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}'
+   Done deploying and initializing crossword.near-ncd.testnet 
 
    ----------------------------
-8. Getting the simple App to work: 
+7. Getting the simple App to work: 
    Had to in stall 'parcel' as kept getting an error:
     > parcel src/index.html
     sh: parcel: command not found
    In Terminal on Mac ran:
     $ sudo npm install -g parcel-bundler
    After that ran this twice (on the first occasion got an error that could not find React (its a GitHub library of a guy who wrote the puzzles).)
-    $ env CONTRACT_NAME=crossword.drkat.testnet npm run start
+   Ideally it should run the first time:
+    $ env CONTRACT_NAME=crossword.near-ncd.testnet npm run start
+
 
 
 RUST:

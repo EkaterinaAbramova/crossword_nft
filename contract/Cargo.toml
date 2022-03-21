@@ -1,7 +1,7 @@
 [package]
 name = "my-crossword"
 version = "0.1.0"
-authors = ["Katya <e7.abramova@gmail.com>"]
+authors = ["Katya"]
 edition = "2018"
 
 [lib]
@@ -9,8 +9,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 near-sdk = "4.0.0-pre.4"
-hex = "0.4.3"
-csv = "1.1" 
+hex = "0.4.3" # used for hashing, so that others can't see some values within the contrac
 
 [profile.release]
 codegen-units = 1
