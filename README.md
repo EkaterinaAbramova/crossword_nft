@@ -21,7 +21,7 @@ chmod +x build.sh
 ```
 
 ### Test Contract
-There are unit tests in this contract designed to verify that the contract code is working as indtended.
+There are unit tests in this contract designed to verify that the contract code is working as indtended. Following completion of test execution, check that all tests passed (last returned statement on the command line).
 ```bash
 cargo test -- --nocapture
 ```
@@ -57,7 +57,7 @@ You will see something like this, with your own data, however note that the `cod
 ```
 
 ### Deploy The Contract to Blockchain
-Ensure the cmd is in the dirctory containing `res` folder and run the following command, which will deploy theh contract to blockchain and at the same time initialise contract parameter `solution` to the hashed solution (as a string). Note that while test account that you created does not have real tokens, the contract deployment is done to the actual (real) NEAR blockchain.
+Ensure the cmd is in the dirctory containing `res` folder and run the following command, which will deploy theh contract to blockchain and at the same time initialise contract parameter `solution` to the hashed solution (as a string). Note that while test account that you created does not have real tokens, the contract deployment is done to an actual blockchain.
 ```bash
 near deploy crossword.myacc.testnet --wasmFile res/my_crossword.wasm --initFunction 'new' --initArgs '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}'
 ```
@@ -84,8 +84,30 @@ This time you will see that the `code_hash` is not all 1s, therefore a contract 
 ### Interact With The Contract
 #### Check if argument == solution and store result: 
 ```bash
-near call crossword.drkat.testnet guess_solution '{"solution": "69c2feb084439956193f4c21936025f14a5a5a78979d67ae34762e18a7206a0f"}' --accountId drkat.testnet
+near call crossword.myacc.testnet guess_solution '{"solution": "near nomicon ref finance"}' --accountId myacc.testnet
 ```
+
+### Create an Interactive Frontend
+```bash
+env CONTRACT_NAME=crossword.myacc.testnet npm run start
+```
+If you get an error 
+```bash
+> parcel src/index.html
+sh: parcel: command not found
+```
+In Terminal on Mac run:
+```bash
+$ sudo npm install -g parcel-bundler
+```
+After that you may need to run the original command twice (on the first occasion you may get an error about 'could not find React' (it is a GitHub library of a developer who wrote the puzzles)). So run below twice if necessary:
+```bash
+env CONTRACT_NAME=crossword.myacc.testnet npm run start
+```
+After this command executes successfuly, command line will output website name: http://localhost:1234 Go to this website and the dApp opens up.
+You are ready to guess the crossword!
+
+[Correct solution is: near nomicon ref finance]
 
 For more informationn see:
 * [Rust Smart Contract Quick Start](https://docs.near.org/docs/develop/contracts/rust/intro)
